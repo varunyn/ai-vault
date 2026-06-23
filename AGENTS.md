@@ -14,6 +14,9 @@ Use this repo as a compact catalog, not a long-form documentation site.
 - Prefer one sentence after the dash.
 - Do not add long descriptions unless setup notes, usage details, or caveats are genuinely needed.
 - Keep the user's wording and intent when they provide it.
+- When adding an external skill, archive a source-faithful copy under `skills/<skill-name>/`.
+- Preserve upstream files and its license, and add a `SOURCE.md` with the source URL, upstream path, and pinned commit SHA.
+- Do not modify archived upstream files by hand. Refresh them from a new upstream revision instead.
 
 ## Organization
 
