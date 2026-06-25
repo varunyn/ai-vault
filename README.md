@@ -10,6 +10,7 @@ External skills that are backed up locally live in [`skills/`](skills/).
 
 - [BuilderIO/skills: read-the-damn-docs](https://github.com/BuilderIO/skills/tree/main/skills/read-the-damn-docs) - Docs-first skill for external APIs, libraries, frameworks, and current product behavior. Local copy: [`skills/read-the-damn-docs/`](skills/read-the-damn-docs/).
 - [weekly-review](skills/weekly-review/) - Local skill for generating static weekly engineering reports from Codex session history.
+- [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop) - Removes predictable AI writing patterns from prose. Local copy: [`skills/stop-slop/`](skills/stop-slop/).
 
 ### SEO and Marketing
 
