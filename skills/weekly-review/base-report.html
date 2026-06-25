@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Codex Log</title>
+  <style>
+    :root {
+      --bg: #f5f5f3;
+      --surface: #ffffff;
+      --surface-soft: #fafaf9;
+      --text: #1f1f1c;
+      --muted: #7a7a73;
+      --faint: #b2b2aa;
+      --border: #e7e5df;
+      --accent: #2f9e44;
+      --accent-soft: #e8f7e8;
+      --warn: #b7791f;
+      --warn-soft: #fff4de;
+      --danger: #c2410c;
+      --danger-soft: #fff0eb;
+      --shadow: 0 8px 30px rgba(0,0,0,0.04);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --sidebar-width: 280px;
+      --max-width: 1280px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, summary { font: inherit; }
+
+    .page {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .brand {
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+      gap: 36px;
+      align-items: start;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 24px;
+      align-self: start;
+      padding: 18px 0;
+    }
+
+    .sidebar h2 {
+      margin: 0 0 16px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .toc {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .toc a {
+      display: block;
+      padding: 10px 14px;
+      border-left: 3px solid transparent;
+      color: var(--muted);
+      font-size: 15px;
+      border-radius: 0 10px 10px 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toc a:hover,
+    .toc a.active {
+      color: var(--text);
+      border-left-color: var(--accent);
+      background: rgba(47, 158, 68, 0.05);
+    }
+
+    .content {
+      min-width: 0;
+    }
+
+    .week-header {
+      margin-bottom: 22px;
+    }
+
+    .week-header h1 {
+      margin: 0 0 6px;
+      font-size: 34px;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+    }
+
+    .week-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .entries {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .entry {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px 22px 18px;
+    }
+
+    .entry-time {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .entry-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .entry-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    .badge {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: lowercase;
+    }
+
+    .badge.done {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .badge.in-progress {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+
+    .badge.blocked {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .badge.note {
+      background: #efefec;
+      color: #66665f;
+    }
+
+    .entry-summary {
+      margin: 0 0 12px;
+      color: #3b3b36;
+      font-size: 15px;
+    }
+
+    details {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 8px;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::before {
+      content: "▸";
+      font-size: 12px;
+      transform: translateY(-1px);
+      transition: transform 120ms ease;
+    }
+
+    details[open] summary::before {
+      transform: rotate(90deg);
+    }
+
+    .detail-list {
+      margin: 14px 0 0 18px;
+      padding: 0;
+      color: #44443f;
+    }
+
+    .detail-list li + li {
+      margin-top: 8px;
+    }
+
+    .entry-meta {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .entry-meta code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 8px;
+      color: #66665f;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+    }
+
+    .skip-link:focus {
+      left: 16px;
+      top: 16px;
+      background: white;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 8px;
+      z-index: 1000;
+    }
+
+    @media (max-width: 920px) {
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .sidebar {
+        position: static;
+        padding: 0;
+      }
+
+      .toc {
+        overflow-x: auto;
+        flex-direction: row;
+        padding-bottom: 4px;
+      }
+
+      .toc a {
+        border-left: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 8px;
+        white-space: nowrap;
+      }
+
+      .toc a:hover,
+      .toc a.active {
+        border-bottom-color: var(--accent);
+        background: rgba(47, 158, 68, 0.05);
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="page">
+    <header class="topbar" aria-label="Breadcrumb">
+      <span class="brand">Traces</span>
+      <span>/</span>
+      <span>weekly log</span>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar" aria-label="On this page">
+        <h2>On this page</h2>
+        <nav class="toc">
+          <a href="#entry-auth">Authentication cleanup</a>
+          <a href="#entry-parser" class="active">Session parser improvements</a>
+          <a href="#entry-ui">Report UI polish</a>
+          <a href="#entry-deploy">Deploy workflow</a>
+        </nav>
+      </aside>
+
+      <main class="content" id="main">
+        <section class="week-header">
+          <h1>Weekly Codex Log</h1>
+          <p>June 10 – June 16, 2026 · 4 grouped work items</p>
+        </section>
+
+        <section class="entries" aria-label="Weekly entries">
+          <article class="entry" id="entry-auth">
+            <div class="entry-time">3 days ago</div>
+            <div class="entry-head">
+              <h2 class="entry-title">Authentication cleanup and token refresh fixes</h2>
+              <span class="badge done">done</span>
+            </div>
+            <p class="entry-summary">
+              Stabilized session refresh behavior and removed duplicate auth edge cases from the mobile flow.
+            </p>
+            <details>
+              <summary>Hide details</summary>
+              <ul class="detail-list">
+                <li>Consolidated refresh handling into one path.</li>
+                <li>Removed duplicate retry behavior during expired-token recovery.</li>
+                <li>Improved user-visible error handling when refresh failed.</li>
+                <li>Reduced noisy auth logging in normal success paths.</li>
+              </ul>
+            </details>
+            <div class="entry-meta">
+              <span>Updated Jun 16, 2026</span>
+              <code>codex/session-a19f</code>
+            </div>
+          </article>
+
+          <article class="entry" id="entry-parser">
+            <div class="entry-time">2 days ago</div>
+            <div class="entry-head">
+              <h2 class="entry-title">Session parser improvements for weekly summaries</h2>
+              <span class="badge done">done</span>
+            </div>
+            <p class="entry-summary">
+              Improved extraction so related prompts collapse into one meaningful engineering log entry instead of raw transcript fragments.
+            </p>
+            <details open>
+              <summary>Hide details</summary>
+              <ul class="detail-list">
+                <li>Grouped consecutive prompts into task-sized units.</li>
+                <li>Added title inference from implementation intent rather than prompt wording.</li>
+                <li>Filtered repetitive back-and-forth that did not change the outcome.</li>
+                <li>Kept concrete fixes, shipped behavior, and final decisions in the summary.</li>
+              </ul>
+            </details>
+            <div class="entry-meta">
+              <span>Updated Jun 16, 2026</span>
+              <code>codex/session-c52b</code>
+            </div>
+          </article>
+
+          <article class="entry" id="entry-ui">
+            <div class="entry-time">2 days ago</div>
+            <div class="entry-head">
+              <h2 class="entry-title">Report UI polish for sidebar and entry cards</h2>
+              <span class="badge in-progress">in-progress</span>
+            </div>
+            <p class="entry-summary">
+              Refined the static report layout to better match a trace-style internal changelog viewer.
+            </p>
+            <details>
+              <summary>Show details</summary>
+              <ul class="detail-list">
+                <li>Adjusted spacing and card hierarchy for faster scanning.</li>
+                <li>Added sticky sidebar behavior on desktop.</li>
+                <li>Collapsed the sidebar into a horizontal rail on smaller screens.</li>
+              </ul>
+            </details>
+            <div class="entry-meta">
+              <span>Updated Jun 15, 2026</span>
+              <code>codex/session-u77m</code>
+            </div>
+          </article>
+
+          <article class="entry" id="entry-deploy">
+            <div class="entry-time">1 day ago</div>
+            <div class="entry-head">
+              <h2 class="entry-title">Deploy workflow notes and follow-up items</h2>
+              <span class="badge note">note</span>
+            </div>
+            <p class="entry-summary">
+              Captured remaining deployment assumptions and a few items that still need validation before automation.
+            </p>
+            <details>
+              <summary>Show details</summary>
+              <ul class="detail-list">
+                <li>Need final source-of-truth for Codex session export format.</li>
+                <li>Need rule for linking multiple sessions to one weekly report.</li>
+                <li>Need decision on whether reports overwrite or version by week slug.</li>
+              </ul>
+            </details>
+            <div class="entry-meta">
+              <span>Updated Jun 17, 2026</span>
+              <code>codex/session-z11k</code>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const tocLinks = [...document.querySelectorAll('.toc a')];
+    const sections = tocLinks
+      .map(link => document.querySelector(link.getAttribute('href')))
+      .filter(Boolean);
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const id = '#' + entry.target.id;
+        const link = tocLinks.find(a => a.getAttribute('href') === id);
+        if (!link) return;
+        if (entry.isIntersecting) {
+          tocLinks.forEach(a => a.classList.remove('active'));
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-30% 0px -55% 0px', threshold: 0.01 });
+
+    sections.forEach(section => observer.observe(section));
+
+    document.querySelectorAll('details').forEach((details) => {
+      const summary = details.querySelector('summary');
+      const syncLabel = () => {
+        summary.textContent = details.open ? 'Hide details' : 'Show details';
+      };
+      syncLabel();
+      details.addEventListener('toggle', syncLabel);
+    });
+  </script>
+</body>
+</html>

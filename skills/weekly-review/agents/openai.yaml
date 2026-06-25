@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Weekly Log"
+  short_description: "Create meaningful Codex work reports"
+  default_prompt: "Use $codex-weekly-log to create a meaningful weekly digest of my Codex work."
